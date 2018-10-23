@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gafis.xj.dao.FUserMapper">
+  <resultMap id="FUserMap" type="com.gafis.xj.model.FUser">
+    <id column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="CUST_NAME" jdbcType="VARCHAR" property="custName" />
+    <result column="TEL_NUMBER" jdbcType="VARCHAR" property="telNumber" />
+    <result column="OPEN_DATE" jdbcType="TIMESTAMP" property="openDate" />
+     
+  </resultMap>
+  
+  <sql id="FUser_Column_List">
+    USER_ID, CUST_NAME,  TEL_NUMBER, OPEN_DATE
+  </sql>
+  
+  <select id="selectByTelNumber" parameterType="java.lang.String" resultMap="FUserMap">
+    select 
+    <include refid="FUser_Column_List" />
+    from CRM_TF_F_USER
+    where TEL_NUMBER = #{telNumber}
+  </select>
+  
+  
+  
+  
+</mapper>

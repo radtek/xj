@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gafis.xj.dao.FUserMsgMapper">
+  <resultMap id="FUserMap" type="com.gafis.xj.model.FUserMsg">
+    <id column="PK_ID" jdbcType="VARCHAR" property="pkId" />
+    <result column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="CUST_NAME" jdbcType="VARCHAR" property="custName" />
+    <result column="MASSAGE" jdbcType="VARCHAR" property="massage" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  
+  <sql id="FUser_Column_List">
+    PK_ID,USER_ID,   TEL_NUMBER,MASSAGE, CREATE_TIME
+  </sql>
+  
+  <select id="selectByUserId" parameterType="java.lang.String" resultMap="FUserMap">
+    select 
+    <include refid="FUser_Column_List" />
+    from CRM_TF_F_USER_MSG
+    where USER_ID = #{userId}
+  </select>
+  
+   <!-- 添加 -->
+  <insert id="insert" parameterType="com.gafis.xj.model.FUserMsg">
+    <selectKey keyProperty="pkId" resultType="String" order="BEFORE">
+	      select sys_guid() from dual
+    </selectKey>
+    insert into CRM_TF_F_USER_MSG (PK_ID, USER_ID, TEL_NUMBER, MASSAGE, CREATE_TIME)
+		values (#{pkId,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{telNumber,jdbcType=VARCHAR}, 
+		#{massage,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  
+   <update id="updateByPrimaryKey" parameterType="com.gafis.xj.model.FUserMsg">
+	    update CRM_TF_F_USER_MSG
+		    <set>
+		      <if test="massage != null">
+		        MASSAGE = #{massage,jdbcType=VARCHAR},
+		      </if>
+		      <if test="createTime != null">
+		        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+		      </if>
+		    </set>
+	    where PK_ID = #{pkId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  
+</mapper>

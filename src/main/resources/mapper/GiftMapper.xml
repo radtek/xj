@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gafis.xj.dao.GiftMapper">
+  <resultMap id="OrderMap" type="com.gafis.xj.model.Order">
+    <id column="GIFT_NUM" jdbcType="VARCHAR" property="pkId" />
+    <result column="GIFT_NAME" jdbcType="VARCHAR" property="GIFT_NAME" />
+    <result column="PRODUCT_CODE" jdbcType="VARCHAR" property="productCode" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="ORDER_TIME" jdbcType="TIMESTAMP" property="orderTime" />
+  </resultMap>
+  
+  <sql id="Order_Column_List">
+    PK_ID, USER_CODE,  PRODUCT_CODE, price,CREATE_TIME,ORDER_TIME
+  </sql>
+  
+ 
+  
+   <select id="getListByUserAndProduct" parameterType="java.lang.String" resultMap="OrderMap">
+    select 
+    <include refid="Order_Column_List" />
+    from CRM_TF_F_ORDER
+    where USER_CODE = #{userCode} and PRODUCT_CODE=#{productCode} and to_char(ORDER_TIME,'YYYY-MM')=#{month}
+  </select>
+  
+</mapper>

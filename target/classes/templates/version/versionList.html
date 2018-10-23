@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html>
+<head lang="en">
+  <meta charset="UTF-8"/>
+  <title></title>
+  <link rel="stylesheet" type="text/css"  th:href="@{easyui/themes/default/easyui.css}"/>
+  <link rel="stylesheet" type="text/css"  th:href="@{easyui/themes/icon.css}"/>
+  <script th:src="@{easyui/jquery.min.js}"></script>
+  <script th:src="@{easyui/jquery.easyui.min.js}"></script>
+  <script th:src="@{js/tab.js}"></script>
+  <script type="text/javascript">
+	  $(document).ready(function(){
+		  	
+		    $('#list').datagrid({   
+			    url:'versionListData',
+			    pagination:true
+			}); 
+			
+		    $('#list').datagrid('getPager').pagination({
+				pageSize: 20,
+				showPageList:false,
+				pageList: [20],
+				beforePageText: '第',//页数文本框前显示的汉字
+				afterPageText: '页    共 {pages} 页',
+				displayMsg:'当前显示 {from} - {to} 条记录    共{total}条记录'
+			 });
+		    
+	  });
+	  
+	//打开excel，并把table的内容拷贝到excel里。
+	  function exportExcel(){
+	      window.clipboardData.setData("Text",document.getElementById('tt').outerHTML);
+	      try{
+	          var ExApp = new ActiveXObject("Excel.Application")
+	          var ExWBk = ExApp.workbooks.add()
+	          var ExWSh = ExWBk.worksheets(1)
+	          ExApp.DisplayAlerts = false
+	          ExApp.visible = false
+	          ExWBk.worksheets(1).Paste;  
+	          var fname = ExApp.Application.GetSaveAsFilename("报表.xls", "Excel Spreadsheets (*.xls), *.xls");
+	          ExWBk.SaveAs(fname);
+	          ExWBk.Close();
+	          ExApp.Quit();
+	      }catch(e){
+	          alert("您的电脑没有安装Microsoft Excel软件或者没有把本站设为信任站点，或者excel版本低于2003。请联系开发人员提供帮助。")
+	          return false
+	      } 
+	  }
+	  
+  </script>
+</head>
+<body>
+<div id="tt" class="easyui-tabs">
+	<div title="更新程序列表" >
+		<div style="margin-left: 20px;margin-top: 10px;">
+			版本号：<input type="text" id="version" name="version"/>
+			<input type="button" class="easyui-linkbutton" onclick="searchVersion()" style="width:100px;" value="查询"/>
+			<input type="button" class="easyui-linkbutton" onclick="addVersion()" style="width:100px;" value="添加"/>
+		</div>
+	 	<table class="easyui-datagrid"   id="list">
+			<thead>
+				<tr>
+					<th data-options="field:'version',width:220,align:'center'">版本号</th>
+					<th data-options="field:'programType',width:140,align:'center',formatter:fmtProgramType">程序类型</th>
+					<th data-options="field:'uploadTime',width:250,align:'center',formatter:formatDate">上传时间</th>
+					<th data-options="field:'enableFlag',width:200,align:'center',formatter:fmtEnableFlag">是否启用</th>
+					<th data-options="field:'operate',width:200,align:'center',formatter:fmtOperate">操作</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+function searchVersion(){
+	var version = $("#version").val();
+	var sdata = {
+			"version": version
+	};
+	$('#list').datagrid('load', sdata);
+}
+
+function addVersion(){
+	var url = "versionEdit";
+	addTab(url,'添加更新程序','tt');
+}
+
+function formatDate(val,row){
+	//shijianchuo是整数，否则要parseInt转换var
+	var time = new Date(val);
+	var y = time.getFullYear();
+	var m = time.getMonth()+1;
+	var d = time.getDate();
+	var h = time.getHours();
+	var mm = time.getMinutes();
+	var s = time.getSeconds();
+	return y+'-'+m+'-'+d+' '+h+':'+mm+':'+s;
+}
+
+function fmtProgramType(val,row){
+	if(val=='0'){
+		return '采集程序';
+	}else{
+		return '补录程序';
+	}
+}
+ 
+function fmtEnableFlag(val,row){
+	if(val=='0'){
+		return "禁用";
+	}else{
+		return "启用";
+	}
+}
+
+function fmtOperate(val,row){
+	 var pkid="'"+row.pkId+"'";
+	 if(row.enableFlag=="1"){
+		 return '<a onclick="disable('+pkid+')"  style="color:#FF6600">禁用</a>';
+	 }else{
+		 return '<a style="color:green" onclick="enable('+pkid+')">启用</a>';
+	 }
+}
+ 
+function disable(pkId){
+	var msg = "您确定要禁用该控件吗？"; 
+	if (confirm(msg)==true){ 
+		$.ajax({
+			  url: "versionDisable.do",
+			  type: "POST",
+			  datatype:'json',
+			  data: {"pkId":pkId},
+			  success: function(opt){
+				  $('#list').datagrid('reload');
+			  }
+		});
+	}else{ 
+		return false; 
+	}
+}
+
+function enable(pkId){
+	var msg = "您确定要启用该控件吗？"; 
+	if (confirm(msg)==true){ 
+		$.ajax({
+			  url: "versionEnable.do",
+			  type: "POST",
+			  datatype:'json',
+			  data: {"pkId":pkId},
+			  success: function(opt){
+				  if(opt=="failure"){
+					  alert("已存在启用的控件版本信息");
+				  }  
+				  $('#list').datagrid('reload');
+			  }
+		});
+	}else{ 
+		return false; 
+	}
+}
+ 
+</script>
+</html>

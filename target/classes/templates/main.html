@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<link rel="stylesheet" type="text/css"  th:href="@{easyui/themes/default/easyui.css}"/>
+    <link rel="stylesheet" type="text/css"  th:href="@{easyui/themes/icon.css}"/>
+    <script th:src="@{easyui/jquery.min.js}"></script>
+    <script th:src="@{easyui/jquery.easyui.min.js}"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+		  $("#version").click(function(){
+			$('#detail').attr('src','versionList'); 
+		  })
+		  
+		$("#report").click(function(){
+			$('#detail').attr('src','reportEdit'); 
+		  })
+		  
+		  $("#flow").click(function(){
+			$('#detail').attr('src','myflow'); 
+		  })
+		})
+		
+	</script>
+	<style type="text/css">
+	 
+	</style> 
+</head>
+<body>
+	<div style="margin:20px 0;"></div>
+	<div class="easyui-layout" style="width:100%;height:700px;">
+		<div data-options="region:'west',split:true" style="width:200px;">
+			<ul class="easyui-tree">
+				<li>
+					<a href="#" id="version">更新程序版本控制</a>
+				</li>
+				<li>
+					<a href="#" id="report">离线数据上报</a>
+				</li>
+				<li>
+					<a href="#" id="flow">设计器</a>
+				</li>
+			</ul>
+		</div>
+		<div data-options="region:'center',iconCls:'icon-ok'" >
+			 <div  >
+				<iframe id="detail" src="" style="width:95%;height:690px;" ></iframe>
+			 </div>
+		</div>
+	</div>
+</body>
+</html>

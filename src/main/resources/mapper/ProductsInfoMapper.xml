@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gafis.xj.dao.ProductsInfoMapper">
+  <resultMap id="ProductsMap" type="com.gafis.xj.model.ProductsInfo">
+    <id column="PK_ID" jdbcType="VARCHAR" property="pkId" />
+    <result column="PRODUCT_NAME" jdbcType="VARCHAR" property="productName" />
+    <result column="PRODUCT_PRICE" jdbcType="DOUBLE" property="productPrice" />
+    <result column="PRODUCT_DETAIL" jdbcType="VARCHAR" property="productDetail" />
+     <result column="PRODUCT_ROLES" jdbcType="VARCHAR" property="productRoles" />
+     
+  </resultMap>
+  
+  <sql id="Products_Column_List">
+    PK_ID, PRODUCT_NAME,  PRODUCT_PRICE, PRODUCT_DETAIL,PRODUCT_ROLES
+  </sql>
+  
+  
+  <select id="getList"  resultMap="ProductsMap">
+    select 
+    <include refid="Products_Column_List" />
+    from CRM_TF_F_PRODUCTS
+  </select>
+  
+  <select id="getProductDetail" parameterType="java.lang.String" resultMap="ProductsMap">
+    select 
+    <include refid="Products_Column_List" />
+    from CRM_TF_F_PRODUCTS
+    where PK_ID = #{pkId}
+  </select>
+  
+  
+    <select id="getProductDetailByCode" parameterType="java.lang.String" resultMap="ProductsMap">
+    select 
+    <include refid="Products_Column_List" />
+    from CRM_TF_F_PRODUCTS
+    where PK_ID = #{pkId}
+  </select>
+  
+</mapper>

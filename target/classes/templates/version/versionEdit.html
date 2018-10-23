@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head lang="en">
+  <meta charset="UTF-8" />
+  <title></title>
+  <link rel="stylesheet" type="text/css"  th:href="@{easyui/themes/default/easyui.css}"/>
+  <link rel="stylesheet" type="text/css"  th:href="@{easyui/themes/icon.css}"/>
+  <script th:src="@{easyui/jquery.min.js}"></script>
+  <script th:src="@{easyui/jquery.easyui.min.js}"></script>
+  <script th:src="@{js/validate.js}"></script>
+</head>
+<body>
+ <form id="form1" enctype="multipart/form-data" method="post" action="upload">
+    <div class="easyui-panel" title="添加更新程序" style="width:400px;padding:60px 70px 50px 70px;pa">
+		<div style="margin-bottom:20px">
+			<div style="margin-bottom:20px">
+				<div>程序类型:</div>
+				<select name="programType" id="programType" style="width: 160px;">
+		    		<option value="0">采集程序</option>
+		    		<option value="1">补录程序</option>
+		    	</select>
+			</div>
+			<!-- <div style="margin-bottom:20px">
+				<div>是否启用:</div>
+				<select name="enableFlag" id="enableFlag" style="width: 160px;">
+					<option value="1">启用</option>
+		    		<option value="0">禁用</option>
+		    	</select>
+			</div> -->
+			<div style="margin-bottom:20px">
+				<div>版本号:</div>
+				<input type="text" id="version" name="version" class="easyui-textbox" style="width:100%"/>
+				<span>（格式：*.*.**）</span>
+			</div>
+			<div><label for="fileToUpload" style="font-weight: bold;color: #215da3;">选择更新程序文件</label></div>
+			<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();" />
+			<div id="fileName"></div>
+		    <div id="fileSize"></div>
+		    <div id="progressNumber"></div>
+			</div>
+			<div>
+				<a href="#" class="easyui-linkbutton" onclick="uploadFile()" style="width:100%">保存</a>
+			</div>
+	</div>
+</form>
+</body>
+<script>
+function fileSelected() {
+    var file = document.getElementById('fileToUpload').files[0];
+    if (file) {
+        var fileSize = 0;
+        if (file.size > 1024 * 1024)
+            fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+        else
+            fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+        document.getElementById('fileName').innerHTML = 'Name: ' + file.name;
+        document.getElementById('fileSize').innerHTML = 'Size: ' + fileSize;
+        document.getElementById('fileType').innerHTML = 'Type: ' + file.type;
+    }
+}
+
+function uploadFile() {
+    var fd = new FormData();
+    var version=$("#version").val();
+    var programType=$("#programType").val();
+    var fileToUpload=document.getElementById('fileToUpload').files[0];
+    if(version==null || version==''){
+    	alert("请填写版本号");
+    	return;
+    }
+    if(!validVersion(version)) {
+		alert("版本号格式不正确");
+		return;
+	}
+    if(programType==null || programType==''){
+    	alert("请选择程序类型");
+    	return;
+    }
+    
+    if(fileToUpload==null || fileToUpload==''){
+    	alert("请上传更新程序");
+    	return;
+    }
+    fd.append("fileToUpload", fileToUpload);
+    fd.append("version", version);
+    fd.append("programType", programType);
+    fd.append("enableFlag","0" );
+    var xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener("progress", uploadProgress, false);
+    xhr.addEventListener("load", uploadComplete, false);
+    xhr.addEventListener("error", uploadFailed, false);
+    xhr.addEventListener("abort", uploadCanceled, false);
+    xhr.open("POST", "upload");  
+    xhr.send(fd);
+}
+
+function uploadProgress(evt) {
+    if (evt.lengthComputable) {
+        var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+        document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
+    } else {
+        document.getElementById('progressNumber').innerHTML = 'unable to compute';
+    }
+}
+
+function uploadComplete(evt) {
+    /* 服务器端返回响应时候触发event事件*/
+    alert(evt.target.responseText);
+}
+
+function uploadFailed(evt) {
+    alert("There was an error attempting to upload the file.");
+}
+
+function uploadCanceled(evt) {
+    alert("The upload has been canceled by the user or the browser dropped the connection.");
+}
+
+function validVersion(version) {
+	var re = /^(\d{1})\.(\d{1})\.(\d{2})$/;
+	return re.test(version);
+}
+</script>
+</html>

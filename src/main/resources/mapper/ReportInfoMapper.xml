@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gafis.xj.dao.ReportInfoMapper">
+  <resultMap id="ReportInfoMap" type="com.gafis.xj.model.FileInfo">
+    <id column="PK_ID" jdbcType="VARCHAR" property="pkId" />
+    <result column="SITENUMBER" jdbcType="VARCHAR" property="sitenumber" />
+    <result column="CARDID" jdbcType="VARCHAR" property="cardid" />
+    <result column="REPORTRESULT" jdbcType="VARCHAR" property="reportresult" />
+    <result column="FAILEDREASON" jdbcType="VARCHAR" property="failedreason" />
+    <result column="REPORTDATE" jdbcType="VARCHAR" property="reportdate" />
+    <result column="CREATEDATE" jdbcType="TIMESTAMP" property="createDate" />
+  </resultMap>
+  
+  <sql id="ReportInfo_Column_List">
+    PK_ID, SITENUMBER,  CARDID, REPORTRESULT, FAILEDREASON,REPORTDATE, CREATEDATE
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ReportInfoMap">
+    select 
+    <include refid="ReportInfo_Column_List" />
+    from XJ_REPORT_INFO
+    where PK_ID = #{pkId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.gafis.xj.model.ReportInfo">
+    <selectKey keyProperty="pkId" resultType="String" order="BEFORE">
+	      select sys_guid() from dual
+    </selectKey>
+    insert into XJ_REPORT_INFO (PK_ID, SITENUMBER, CARDID, REPORTRESULT,
+     FAILEDREASON, REPORTDATE, CREATEDATE)
+    values (#{pkId,jdbcType=VARCHAR}, #{sitenumber,jdbcType=VARCHAR},  
+      #{cardid,jdbcType=VARCHAR}, #{reportresult,jdbcType=VARCHAR}, #{failedreason,jdbcType=VARCHAR}, 
+      #{reportdate,jdbcType=VARCHAR},  #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+    
+</mapper>
